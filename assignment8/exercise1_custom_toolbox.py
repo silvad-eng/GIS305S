@@ -50,7 +50,7 @@ def main():
     # Ask the user to define an output layer name
     # Change me this next line below to use GetParamters!!
     intersect_lyr_name = arcpy.GetParameterAsText(2)
-    lyr_list = [buf_rivers, buf_cities];lkkhkljhkj
+    lyr_list = [buf_rivers, buf_cities]
     intersect(lyr_list, intersect_lyr_name)
     print(f"New intersect layer generated called: {intersect_lyr_name}")
 
