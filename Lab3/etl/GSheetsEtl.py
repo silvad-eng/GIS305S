@@ -5,18 +5,14 @@ import csv
 from etl.SpatialEtl import SpatialEtl
 
 
-
 class GSheetsEtl(SpatialEtl):
 
     config_dict = None
-
     def __init__(self, config_dict):
-        super().__init__(self.config_dict)
+        super().__init__(config_dict)
 
     def extract(self):
         print("Extracting addresses from google form spreadsheet")
-
-
         r = requests.get(self.config_dict.get('remote_url'))
         r.encoding = "utf-8"
         data = r.text
@@ -54,13 +50,14 @@ class GSheetsEtl(SpatialEtl):
         arcpy.env.workspace = f"{self.config_dict.get('proj_dir')}"
         arcpy.env.overwriteOutput = True
 
-        in_table = f"{self.config_dict.get('proj_dir')}new_addresses.csv"
+        in_table = r"C:\Users\chica\Documents\ArcGIS\Projects\WNVOutbreak\new_addresses.csv"
         out_feature_class = f"{self.config_dict.get('proj_dir')}WNVOutbreak.gdb\\avoid_points"
-        print("avoid points file has been created")
+        print(f"{out_feature_class}")
+        print("Avoid points file has been created.")
         x_coords = "X"
         y_coords = "Y"
 
-        #     Make the XY event layer....
+        # Make the XY event layer....
         arcpy.management.XYTableToPoint(in_table, out_feature_class, x_coords, y_coords)
 
         #     Print the total rows
