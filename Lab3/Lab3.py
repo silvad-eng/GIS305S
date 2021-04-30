@@ -145,7 +145,6 @@ def main():
     map = exportMap(aprx)
     logging.info("Map has been exported to PDF.")
 
-
     print("Final Map Done! Check the file folder for output.")
 
 
