@@ -49,9 +49,9 @@ def intersect(inter_list):
     # return the name of the new output layer
     return output_layer
 
-def spatial(output_intersectlayer):
+def spatial(erase_layer):
     target_feature = f"{config_dict.get('proj_dir')}WNVOutbreak.gdb\Addresses"
-    join_feature = output_intersectlayer
+    join_feature = erase_layer
     spj_file = f"{config_dict.get('proj_dir')}WNVOutbreak.gdb\spatial_join"
     arcpy.SpatialJoin_analysis(target_feature, join_feature, spj_file)
     print("Spatial Join has been completed")
@@ -71,13 +71,15 @@ def erase(erase_points):
 def exportMap(aprx):
     map_final = aprx.listMaps()[0]
 
-    #Setting spatial reference for the map document
-    # state_plane_noco = arcpy.SpatialReference(3743)
-    # map_final.spatialReference = state_plane_noco
+    #Setting spatial reference (Northern Colorado State Plane) for the map document.
+    state_plane_noco = arcpy.SpatialReference(102653)
+    map_final.spatialReference = state_plane_noco
 
     #List Map Layout in WNVOutbreak Project
     lyt_list = aprx.listLayouts()[0]
-    sub_title= input("Please enter the name for the output map: ")
+    sub_title = input("Please enter the name for the output map: ")
+    final_analysisname = input(str("Enter the name of the final name: "))
+    pdf_filename = final_analysisname.pdf
     print(lyt_list.name)
 
     for el in lyt_list.listElements():
@@ -85,14 +87,12 @@ def exportMap(aprx):
         if "Title" in el.name:
             el.text = el.text + " " + sub_title
 
-    # map_final.addDataFromPath(f"{config_dict.get('proj_dir')}erase_layer")
+    # Save all the aprx to the
     aprx.save()
-    lyt_list.exportToPDF(f"{config_dict.get('proj_dir')}FinalMap.pdf")
+
+    # Export final map to a pdf using the user input name.
+    lyt_list.exportToPDF(f"{config_dict.get('proj_dir')}\pdf_filename")
     return
-
-
-
-
 
 
 def main():
@@ -107,7 +107,7 @@ def main():
 
     #buffer
     for layer in LayerList:
-        dist= 1500
+        dist = 1500
         bufferlayer = buffer(layer,dist)
 
 
@@ -124,17 +124,19 @@ def main():
     print("Intersect avoid points layer complete.")
 
 
-    #Spatialjoin
-    logging.info("Spatial Join all buffered layers.")
-    output_spjlayer = spatial(output_intersectlayer)
-    print(f"New Spatial Join Layer named: {output_spjlayer}")
-
-
     #Erase
     logging.info("Erase new address points from spatial join layer.")
-    erase_points = "avoid_points_buff"
+    erase_points = "intersect_avpt"
     erase_layer = erase(erase_points)
     print(f"Erases new address file from spatial join: {erase_layer}")
+
+    # Spatialjoin
+    logging.info("Spatial Join all buffered layers.")
+    finaloutput_spjlayer = spatial(erase_layer)
+    print(f"New Spatial Join Layer named: {finaloutput_spjlayer}")
+
+    # Select Addresses within the spatial join that will be contacted for mosquito spraying
+    # addresses_final = arcpy.SelectLayerByLocation_management('')
 
 
     #Get Project and Set Layout
@@ -148,17 +150,11 @@ def main():
 
 
 
-
-
-
-
 if __name__ == '__main__':
     global config_dict
     config_dict = setup()
     print(config_dict)
     etl()
     main()
-
-
 
 
