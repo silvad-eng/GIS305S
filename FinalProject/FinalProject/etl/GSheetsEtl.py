@@ -9,11 +9,16 @@ class GSheetsEtl(SpatialEtl):
 
     """
     GSheetsEtl performs an extract, transform and load process using a URL to a
-    google spreadsheet. The spreadsheet must contain an address and zipcode column.
+    google spreadsheet. The spreadsheet must contain an address and zipcode column. It imports classes
+    from the SpatialEtl file and adds
 
-    Parameters:
+    parameters:
     config_dict(dictionary): A dictionary containing a remote_url key to the google
     spreadsheet and web geocoding service.
+    SpatialEtl: calls the
+    returns: avoid points layer (XYTable)
+
+
     """
 
     config_dict = None
@@ -23,6 +28,8 @@ class GSheetsEtl(SpatialEtl):
     def extract(self):
         """
         Extracting data from a google spreadsheet and save it as a local file.
+        parameters: yaml file google form url
+        returns: csv
         """
         print("Extracting addresses from google form spreadsheet")
         r = requests.get(self.config_dict.get('remote_url'))
@@ -33,13 +40,15 @@ class GSheetsEtl(SpatialEtl):
 
     # transform function
     def transform(self):
-        """Take the file from the file folder, process through a geocoder.
-        Saving the file a new csv file.
-        Adding city and state to the address then passing it through the geocoder and requesting
-        XY coordinates in return json file.
+        """
+        Takes the file from the file folder, processes addresses through a geocoder.
+        Saves the file as new csv file.
 
-        parameter: self
-        returns: csv with x and y coordinates
+        Adds city and state to the address then passing it through the geocoder and requesting
+        XY coordinates, returning a json file.
+
+        parameter: self, remote url prefix and suffix (yaml file)
+        returns: csv with x and y coordinates to be used as the avoid points layer in finalproject.py main function
 
         """
         print("Add City, State")
@@ -66,11 +75,11 @@ class GSheetsEtl(SpatialEtl):
     # load function
     def load(self):
         """
-         Creates a point feature class from input table by creating a XY event layer.
+         Creates a point feature class from  the input table by creating a XY event layer and is then
+         called in finalproject.py main's-but is loaded into the project directory (found in the yaml file).
 
-         parameters: self
-
-         returns: XY Table to ArcGIS Pro
+         parameters: self, project directory (found in yaml file)
+         returns: XY Table to ArcGIS Pro and a count of the number addresses inputted google form
         """
 
         # Set Environment Settings
