@@ -6,7 +6,7 @@ from FinalProject import finalproject
 
 # Script to help me evaluate my help documentation
 
-config_dict={}
+config_dict = {}
 my_etl = GSheetsEtl(config_dict)
 my_spatial = SpatialEtl(config_dict)
 my_finalproject = finalproject
